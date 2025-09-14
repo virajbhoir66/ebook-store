@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ebook Store</title>
+</head>
+<body>
+  <h1>📚 Welcome to My Ebook Store</h1>
+
+  <div>
+    <h2>Business Ideas Ebook</h2>
+    <p>Price: ₹99</p>
+    <button id="buyBtn">Buy Now</button>
+  </div>
+
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script>
+    document.getElementById("buyBtn").onclick = async function () {
+      const res = await fetch("http://localhost:5000/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: 99 })
+      });
+      const order = await res.json();
+
+      var options = {
+        "key": "rzp_test_RHWAFwh7uwWSMg",  // Razorpay Key ID
+        "amount": order.amount,
+        "currency": "INR",
+        "name": "Ebook Store",
+        "description": "Business Ebook",
+        "order_id": order.id,
+        "handler": function (response){
+            alert("✅ Payment Successful! Txn ID: " + response.razorpay_payment_id);
+            // Yaha aap download link dikha sakte ho ya email bhej sakte ho
+             document.body.innerHTML += `
+      <div style="margin-top:20px; padding:20px; border:1px solid #ccc;">
+        <h3>🎉 Thank you for your purchase!</h3>
+        <p>Your payment was successful.</p>
+        <a href="https://drive.google.com/uc?export=download&id=143N5YCN7Z3vyvthqXWKOUjvEfDB00RZ5" 
+           download 
+           style="padding:10px 20px; background:green; color:white; text-decoration:none; border-radius:5px;">
+           ⬇️ Download Your Ebook
+        </a>
+      </div>
+    `;
+        }
+      };
+      var rzp1 = new Razorpay(options);
+      rzp1.open();
+    }
+  </script>
+</body>
+</html>
